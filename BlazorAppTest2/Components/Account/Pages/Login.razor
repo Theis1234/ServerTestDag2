@@ -10,6 +10,7 @@
 @inject ILogger<Login> Logger
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
+@inject HttpClient _httpClient
 
 <PageTitle>Log in</PageTitle>
 
@@ -126,6 +127,38 @@
 
         if (result.Succeeded)
         {
+            BlazorAppTest2.Models.UserInfo loginInfo = new() { Email = Input.Email, Password = Input.Password };
+            string serializedLoginInfo = Newtonsoft.Json.JsonConvert.SerializeObject(loginInfo);
+            StringContent sc2 = new StringContent(serializedLoginInfo, System.Text.Encoding.UTF8, "application/json");
+            var response2 = await _httpClient.PostAsync("https://localhost:7265/login", sc2);
+
+            string tokenAsJson = response2.Content.ReadAsStringAsync().Result;
+            Newtonsoft.Json.Linq.JObject jObject = Newtonsoft.Json.Linq.JObject.Parse(tokenAsJson);
+            string tokenValue = jObject.SelectToken("token").ToString();
+
+            // This must match the in your .csproj file
+            string userSecretsId = "aspnet-BlazorApp2-5fbb579a-33f0-4610-8492-7711cc291a69";
+            string secretsRoot = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                "Microsoft",
+                "UserSecrets",
+                userSecretsId
+            );
+
+            string secretsPath = Path.Combine(secretsRoot, "secrets.json");
+            if (File.Exists(secretsPath))
+            {
+                string json = File.ReadAllText(secretsPath);
+                Dictionary<string, string> secrets = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(json) ?? new();
+
+                // Add or update the key
+                secrets["apitoken"] = tokenValue;
+
+                // Save back to file
+                string updatedJson = System.Text.Json.JsonSerializer.Serialize(secrets, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+                File.WriteAllText(secretsPath, updatedJson);
+            }
+
             Logger.LogInformation("User logged in.");
             RedirectManager.RedirectTo("/Account/AddCprNumber");
             //RedirectManager.RedirectTo(ReturnUrl);
