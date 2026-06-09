@@ -1,0 +1,40 @@
+﻿@inherits LayoutComponentBase
+@inject AuthenticationStateProvider _authenticationStateProvider
+
+<div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <main>
+        <div class="top-row px-4">
+            @if (_isAdmin)
+            {
+                <a href="/addroles">Add Roles</a>
+            }
+            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+        </div>
+
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>
+
+<div id="blazor-error-ui" data-nosnippet>
+    An unhandled error has occurred.
+    <a href="." class="reload">Reload</a>
+    <span class="dismiss">🗙</span>
+</div>
+@code {
+    private bool _isAuthenticated;
+    private bool _isAdmin;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authenticationState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authenticationState.User;
+        _isAuthenticated = user.Identity.IsAuthenticated;
+        _isAdmin = user.IsInRole("Administrator");
+    }
+}

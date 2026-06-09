@@ -1,0 +1,41 @@
+﻿@page "/"
+
+@inject AuthenticationStateProvider _authenticationStateProvider
+
+<PageTitle>Home</PageTitle>
+
+<h1>Hello, world!</h1>
+
+@* @if (_isAuthenticated)
+{
+    <div>Du er logget ind.</div>
+    <div>Welcome to your new app.</div>
+}
+else
+{
+    <div>Du er ikke logget ind  </div>
+} *@
+
+<AuthorizeView>
+    <Authorized>
+        <div>Du er logget ind.</div>
+        <div>Welcome to your new app.</div>
+    </Authorized>
+    <NotAuthorized>
+        <div>Du er ikke logget ind  </div>
+    </NotAuthorized>
+</AuthorizeView>
+
+
+@code {
+    private bool _isAuthenticated;
+    private bool _isAdmin;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authenticationState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authenticationState.User;
+        _isAuthenticated = user.Identity.IsAuthenticated;
+        _isAdmin = user.IsInRole("Administrator");
+    }
+}

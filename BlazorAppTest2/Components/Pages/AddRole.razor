@@ -1,0 +1,45 @@
+﻿@page "/addroles"
+<h3>Add Role</h3>
+@rendermode InteractiveServer
+
+@using Microsoft.AspNetCore.Identity;
+@using BlazorAppTest2.Data;
+
+@inject IServiceProvider _serviceProvider;
+@inject UserManager<ApplicationUser> UserManager;
+
+    <div>
+        User: <input type="text" @bind="_user" style="width:200px;height:45px;" />
+    </div>
+
+<div style="margin-top:3px;">
+    Role: <input type="text" @bind="_role" style="width:200px;height:45px;" />
+</div>
+<div style="margin-top:3px;">
+    <input type="button" 
+        class="btn btn-lg btn-primary" 
+        style="width:200px;height:45px;margin-top:3px;margin-left:42px; 
+            " @onclick="CreateUserRoles" value="Add" />
+</div>
+
+@code {
+    private string? _message;
+    private string _user;
+    private string _role;
+
+    private async Task CreateUserRoles()
+    {
+        var roleManager = _serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+        var userRoleCheck = await roleManager.RoleExistsAsync(_role);
+        if (!userRoleCheck)
+        {
+            await roleManager.CreateAsync(new IdentityRole(_role));
+        }
+
+        ApplicationUser identityUser = await UserManager.FindByEmailAsync(_user);
+        await UserManager.AddToRoleAsync(identityUser, _role);
+
+        _message = "Success adding user to admin role";
+    }
+}
