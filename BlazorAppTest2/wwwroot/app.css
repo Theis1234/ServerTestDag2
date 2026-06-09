@@ -58,3 +58,67 @@ h1:focus {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
     text-align: start;
 }
+/* Only gentle background change (safe with Blazor defaults) */
+body {
+    background-color: #f6f8fc;
+}
+
+/* Keep Bootstrap grid intact but improve spacing */
+.row {
+    margin-top: 2rem;
+}
+
+/* Improve the column container without breaking layout */
+.col-lg-6 {
+    max-width: 520px;
+}
+
+    /* Turn the existing form area into a soft "card feel" */
+    .col-lg-6 > * {
+        background: #ffffff;
+        padding: 28px;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+    }
+
+/* Headings refinement */
+h1 {
+    font-weight: 700;
+    color: #1f2937;
+}
+
+h2 {
+    font-size: 1.2rem;
+    color: #4b5563;
+}
+
+/* Inputs (light enhancement only) */
+.form-control {
+    border-radius: 10px;
+}
+
+    .form-control:focus {
+        border-color: #2563eb;
+        box-shadow: 0 0 0 0.15rem rgba(37, 99, 235, 0.15);
+    }
+
+/* Primary button (subtle improvement only) */
+.btn-primary {
+    border-radius: 10px;
+    font-weight: 600;
+}
+
+/* Validation text */
+.text-danger {
+    font-size: 0.85rem;
+}
+
+/* Better spacing between fields */
+.form-floating {
+    margin-bottom: 14px;
+}
+
+/* Horizontal line subtle */
+hr {
+    opacity: 0.15;
+}
