@@ -1,3 +1,4 @@
 <Solution>
   <Project Path="BlazorAppTest2/BlazorAppTest2.csproj" />
+  <Project Path="SecureServerTest/SecureServerTest.csproj" Id="70a3538c-ee4f-4eeb-a028-ab75f81543eb" />
 </Solution>

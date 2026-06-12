@@ -75,7 +75,12 @@
         if (result.Succeeded)
         {
             Logger.LogInformation("User with ID '{UserId}' logged in with 2fa.", userId);
-            RedirectManager.RedirectTo("/Account/AddCprNumber");
+            var user = await UserManager.FindByIdAsync(userId);
+            if (user.CprNumber is null)
+            {
+                RedirectManager.RedirectTo("/Account/AddCprNumber");
+            }
+            RedirectManager.RedirectTo(ReturnUrl);
         }
         else if (result.IsLockedOut)
         {

@@ -4,10 +4,12 @@
 @using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Identity
 @using BlazorAppTest2.Data
+@using Microsoft.JSInterop
 
 @inject UserManager<ApplicationUser> UserManager
 @inject SignInManager<ApplicationUser> SignInManager
 @inject ILogger<Login> Logger
+@inject IJSRuntime JS
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
 @inject HttpClient _httpClient
@@ -125,6 +127,16 @@
             Newtonsoft.Json.Linq.JObject jObject = Newtonsoft.Json.Linq.JObject.Parse(tokenAsJson);
             string tokenValue = jObject.SelectToken("token").ToString();
 
+            HttpContext.Response.Cookies.Append(
+    "ApiToken",
+    tokenValue,
+    new CookieOptions
+    {
+        HttpOnly = true,   // protects against JS access (good practice)
+        Secure = true,     // HTTPS only
+        SameSite = SameSiteMode.Lax,
+        Expires = DateTimeOffset.UtcNow.AddDays(7)
+    });
             // This must match the in your .csproj file
             string userSecretsId = "aspnet-BlazorAppTest2-8fa151b8-0bbe-4a68-9f4b-7c9b27e4fcad";
             string secretsRoot = Path.Combine(
@@ -149,8 +161,12 @@
             }
 
             Logger.LogInformation("User logged in.");
-            RedirectManager.RedirectTo("/Account/AddCprNumber");
-            //RedirectManager.RedirectTo(ReturnUrl);
+            var user = await UserManager.FindByEmailAsync(Input.Email);
+            if(user.CprNumber is null)
+            {
+                RedirectManager.RedirectTo("/Account/AddCprNumber");
+            }
+            RedirectManager.RedirectTo(ReturnUrl);
         }
         else if (result.RequiresTwoFactor)
         {

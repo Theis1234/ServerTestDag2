@@ -1,0 +1,10 @@
+global using Xunit;
+global using Moq;
+global using Bunit;
+global using FluentAssertions;
+global using Microsoft.AspNetCore.Identity;
+global using Microsoft.AspNetCore.Components;
+global using Microsoft.Extensions.DependencyInjection;
+global using Microsoft.Extensions.Logging;
+global using BlazorAppTest2.Tests.Helpers;
+global using BlazorAppTest2.Tests.Fakes;
